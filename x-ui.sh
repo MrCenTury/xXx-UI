@@ -682,7 +682,7 @@ ${GREEN}                                                                  ${PLAI
  ${GREEN}10.${PLAIN} Check xXx-UI Status
  ${GREEN}11.${PLAIN} View xXx-UI Log
 --------------------------------------------------------------------------------
-${GREEN}12.${PLAIN} Set the xXx-UI auto-start at boot
+ ${GREEN}12.${PLAIN} Set the xXx-UI auto-start at boot
  ${GREEN}13.${PLAIN} Cancel the xXx-UI auto-start at boot
 --------------------------------------------------------------------------------
  ${GREEN}14.${PLAIN} Update Geosite and Geoip
