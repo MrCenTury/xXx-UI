@@ -681,23 +681,24 @@ ${GREEN}                                                                  ${PLAI
   ${GREEN}9.${PLAIN} Restart xXx-UI
  ${GREEN}10.${PLAIN} Check xXx-UI Status
  ${GREEN}11.${PLAIN} View xXx-UI Log
----------------------------------------------------------------------------------
- ${GREEN}12.${PLAIN} Set the xXx-UI auto-start at boot
+--------------------------------------------------------------------------------
+${GREEN}12.${PLAIN} Set the xXx-UI auto-start at boot
  ${GREEN}13.${PLAIN} Cancel the xXx-UI auto-start at boot
----------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
  ${GREEN}14.${PLAIN} Update Geosite and Geoip
  ${GREEN}15.${PLAIN} One-click installation BBR (the latest kernel)
  ${GREEN}16.${PLAIN} One-click application certificate (ACME script application)
  ${GREEN}17.${PLAIN} Open all network ports in the server
  ${GREEN}18.${PLAIN} Install and configure Cloudflare Warp (Experimental)
- ---------------------------------------------------------------------------------
+ --------------------------------------------------------------------------------
  ${GREEN}19.${PLAIN} Backup Database
  ${GREEN}20.${PLAIN} Recovery Database
- ---------------------------------------------------------------------------------
+ --------------------------------------------------------------------------------
  ${GREEN}21.${PLAIN} Backup Auto DataBase Cronjob in Telegram
  ${GREEN}22.${PLAIN} -> Telegram CronJob Time Change
  ${GREEN}23.${PLAIN} --> Disable Telegram Backup Auto
- --------------------------------------------------------------------------------   "
+ --------------------------------------------------------------------------------   
+ "
     show_status
     echo ""
     if [[ -n $v4 && -z $v6 ]]; then
