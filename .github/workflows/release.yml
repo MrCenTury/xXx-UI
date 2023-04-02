@@ -1,4 +1,4 @@
-name: Release X-ui
+name: Release xXx
 on:
   push:
     tags:
