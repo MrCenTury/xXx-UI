@@ -78,7 +78,7 @@
                                  @change="() => getDBInbounds()">
                             <template slot="action" slot-scope="text, dbInbound">
                                 <a-dropdown :trigger="['click']">
-                                    <a-icon @click="e => e.preventDefault()" type="menu"></a-icon>
+				  <a-button type="primary" @click="e => e.preventDefault()">{{ i18n "pages.inbounds.operate" }}</a-button>
                                     <a-menu slot="overlay" @click="a => clickAction(a, dbInbound)" :theme="siderDrawer.theme">
                                         <a-menu-item v-if="dbInbound.isSS" key="qrcode">
                                             <a-icon type="qrcode"></a-icon>
