@@ -1,0 +1,69 @@
+{{define "qrcodeModal"}}
+<a-modal id="qrcode-modal" v-model="qrModal.visible" :title="qrModal.title"
+         :closable="true"
+         :class="siderDrawer.isDarkTheme ? darkClass : ''"
+         :footer="null"
+         width="300px">
+    <a-tag color="green" style="margin-bottom: 10px;display: block;text-align: center;" >{{ i18n "pages.inbounds.clickOnQRcode" }}</a-tag>
+    <canvas @click="copyToClipboard()" id="qrCode" style="width: 100%; height: 100%;"></canvas>
+</a-modal>
+
+<script>
+
+    const qrModal = {
+        title: '',
+        content: '',
+        inbound: new Inbound(),
+        dbInbound: new DBInbound(),
+        copyText: '',
+        qrcode: null,
+        clipboard: null,
+        visible: false,
+        show: function (title='', content='', dbInbound=new DBInbound(), copyText='') {
+            this.title = title;
+            this.content = content;
+            this.dbInbound = dbInbound;
+            this.inbound = dbInbound.toInbound();
+            if (ObjectUtil.isEmpty(copyText)) {
+                this.copyText = content;
+            } else {
+                this.copyText = copyText;
+            }
+            this.visible = true;
+            qrModalApp.$nextTick(() => {
+                if (this.qrcode === null) {
+                    this.qrcode = new QRious({
+                        element: document.querySelector('#qrCode'),
+                        size: 260,
+                        value: content,
+                    });
+                } else {
+                    this.qrcode.value = content;
+                }
+            });
+        },
+        close: function () {
+            this.visible = false;
+        },
+    };
+
+    const qrModalApp = new Vue({
+        el: '#qrcode-modal',
+        data: {
+            qrModal: qrModal,
+        },
+        methods: {
+            copyToClipboard() {
+                this.qrModal.clipboard = new ClipboardJS('#qrCode', {
+                    text: () => this.qrModal.copyText,
+                });
+                this.qrModal.clipboard.on('success', () => {
+                    app.$message.success('{{ i18n "copied" }}')
+                    this.qrModal.clipboard.destroy();
+                });
+            }
+        },
+    });
+
+</script>
+{{end}}
