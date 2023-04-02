@@ -102,12 +102,16 @@
     </table>
     <table v-if="infoModal.clientSettings.subId + infoModal.clientSettings.tgId" style="margin-bottom: 10px;">
         <tr v-if="infoModal.clientSettings.subId">
-            <td>Subscription link</td>
+            <a-divider>Subscription Link</a-divider>
             <td><a :href="[[ infoModal.subBase + infoModal.clientSettings.subId ]]" target="_blank">[[ infoModal.subBase + infoModal.clientSettings.subId ]]</a></td>
         </tr>
         <tr v-if="infoModal.clientSettings.tgId">
-            <td>Telegram Username</td>
+            <a-divider>Telegram Username</a-divider>
             <td><a :href="[[ infoModal.tgBase + infoModal.clientSettings.tgId ]]" target="_blank">@[[ infoModal.clientSettings.tgId ]]</a></td>
+        </tr>
+        <tr v-if="infoModal.clientSettings.botsubId">
+            <a-divider>Subscription Bot</a-divider>
+            <td><a :href="[[ infoModal.clientSettings.bsubId ]]" target="_blank">[[ infoModal.clientSettings.bsubId ]]</a></td>
         </tr>
     </table>
     </template>
