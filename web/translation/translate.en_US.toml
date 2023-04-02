@@ -65,7 +65,7 @@
 "emptyUsername" = "Please Enter Username"
 "emptyPassword" = "Please Enter Password"
 "wrongUsernameOrPassword" = "Invalid username or password"
-"successLogin" = "Login"
+"successLogin" = "Login to xXx UI"
 
 [pages.index]
 "title" = "System status"
@@ -95,7 +95,7 @@
 "totalDownUp" = "Total uploads/downloads"
 "totalUsage" = "Total usage"
 "inboundCount" = "Number of inbound"
-"operate" = "Operate"
+"operate" = "Menu"
 "enable" = "Enable"
 "remark" = "Remark"
 "protocol" = "Protocol"
