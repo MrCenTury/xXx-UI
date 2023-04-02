@@ -57,7 +57,7 @@
 "link" = "دیگر"
 
 [pages.login]
-"title" = "ورود به سیستم X-UI"
+"title" = "ورود به سیستم xXx-UI"
 "loginAgain" = "مدت زمان استفاده به اتمام رسیده ، لطفا دوباره وارد شوید"
 
 [pages.login.toasts]
@@ -95,7 +95,7 @@
 "totalDownUp" = "جمع آپلود/دانلود"
 "totalUsage" = "جمع کل"
 "inboundCount" = "تعداد سرویس ها"
-"operate" = "عملیات"
+"operate" = "امکانات"
 "enable" = "فعال"
 "remark" = "نام"
 "protocol" = "پروتکل"
