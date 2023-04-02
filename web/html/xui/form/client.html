@@ -5,10 +5,10 @@
     </template>
     <a-form-item>
         <span slot="label">
-            Email
+            username
             <a-tooltip>
                 <template slot="title">
-                    The email must be completely unique
+                    The username must be completely unique
                 </template>
                 <a-icon type="sync" @click="getNewEmail(client)"></a-icon>
             </a-tooltip>
@@ -32,6 +32,9 @@
     </a-form-item>
     <a-form-item label="Telegram Username" v-if="client.email">
         <a-input v-model.trim="client.tgId"></a-input>
+    </a-form-item>
+    <a-form-item label="Subscription BOT" v-if="client.email">
+        <a-input v-model.trim="client.bsubId"></a-input>
     </a-form-item>
     <a-form-item v-if="inbound.xtls" label="flow">
         <a-select v-model="client.flow" style="width: 150px" :dropdown-class-name="siderDrawer.isDarkTheme ? 'ant-card-dark' : ''">
