@@ -93,7 +93,10 @@
 [pages.inbounds]
 "title" = "کاربران"
 "totalDownUp" = "جمع آپلود/دانلود"
-"totalUsage" = "جمع کل"
+"Username" = "یوزرنیم"
+"Subscription" = "لینک اشتراک"
+"Telegram" = "یوزرنیم تلگرام"
+"SubscriptionBot" = "اشتراک ربات"
 "inboundCount" = "تعداد سرویس ها"
 "operate" = "امکانات"
 "enable" = "فعال"
