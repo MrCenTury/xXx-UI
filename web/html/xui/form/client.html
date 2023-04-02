@@ -5,7 +5,7 @@
     </template>
     <a-form-item>
         <span slot="label">
-            username
+            {{ i18n "pages.inbounds.username" }}
             <a-tooltip>
                 <template slot="title">
                     The username must be completely unique
@@ -24,16 +24,16 @@
     <a-form-item label="id" v-if="inbound.protocol === Protocols.VMESS || inbound.protocol === Protocols.VLESS">
         <a-input v-model.trim="client.id"></a-input>
     </a-form-item>
-    <a-form-item label='{{ i18n "additional" }} ID' v-if="inbound.protocol === Protocols.VMESS">
+    <a-form-item label='{{ i18n "additional" }}' v-if="inbound.protocol === Protocols.VMESS">
         <a-input type="number" v-model.number="client.alterId"></a-input>
     </a-form-item>
-    <a-form-item label="Subscription" v-if="client.email">
+    <a-form-item label='{{ i18n "pages.inbounds.Subscription" }}' v-if="client.email">
         <a-input v-model.trim="client.subId"></a-input>
     </a-form-item>
-    <a-form-item label="Telegram Username" v-if="client.email">
+    <a-form-item label='{{ i18n "pages.inbounds.Telegram" }}' v-if="client.email">
         <a-input v-model.trim="client.tgId"></a-input>
     </a-form-item>
-    <a-form-item label="Subscription BOT" v-if="client.email">
+    <a-form-item label='{{ i18n "pages.inbounds.SubscriptionBot" }}' v-if="client.email">
         <a-input v-model.trim="client.bsubId"></a-input>
     </a-form-item>
     <a-form-item v-if="inbound.xtls" label="flow">
