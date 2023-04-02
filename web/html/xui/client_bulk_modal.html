@@ -39,6 +39,9 @@
         <a-form-item label="Telegram ID">
             <a-input v-model.trim="clientsBulkModal.tgId"></a-input>
         </a-form-item>
+        <a-form-item label="Subscription Bot">
+            <a-input v-model.trim="clientsBulkModal.bsubId"></a-input>
+        </a-form-item>
         <a-form-item>
             <span slot="label">
                 <span >{{ i18n "pages.inbounds.totalFlow" }}</span>(GB)
@@ -88,6 +91,7 @@
         emailPostfix: "",
         subId: "",
         tgId: "",
+        bsubId: "",
         ok() {
             method=clientsBulkModal.emailMethod;
             if(method>1){
@@ -105,6 +109,7 @@
                 if(method==4) newClient.email = "";
                 newClient.email += useNum ? prefix + i.toString() + postfix : prefix + postfix;
                 newClient.subId = clientsBulkModal.subId;
+                newClient.bsubId = clientsBulkModal.bsubId;
                 newClient.tgId = clientsBulkModal.tgId;
                 newClient._totalGB = clientsBulkModal.totalGB;
                 newClient._expiryTime = clientsBulkModal.expiryTime;
@@ -127,6 +132,7 @@
             this.emailPostfix= "";
             this.subId= "";
             this.tgId= "";
+            this.bsubId= "";
             this.dbInbound = new DBInbound(dbInbound);
             this.inbound = dbInbound.toInbound();
             this.clients = this.getClients(this.inbound.protocol, this.inbound.settings);
