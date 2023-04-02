@@ -6,7 +6,7 @@ COPY . .
 RUN go build main.go
 
 FROM alpine
-LABEL org.opencontainers.image.authors="alireza7@gmail.com"
+LABEL org.opencontainers.image.authors="Mrde3ign@gmail.com"
 ENV TZ=Asia/Tehran
 WORKDIR /app
 
