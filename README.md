@@ -91,7 +91,7 @@ After Installation，you can input `x-ui`to enter control menu，current menu de
 - Debian 8+
 
 ## telegram
-[Group](https://t.me/xui_fa)
+- [Group](https://t.me/xui_fa)
 
 ## credits
 - [vaxilu/x-ui](https://github.com/vaxilu/x-ui)
