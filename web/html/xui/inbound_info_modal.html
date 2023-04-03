@@ -199,7 +199,7 @@
         link: null,
         index: null,
         isExpired: false,
-        subBase: window.location.protocol + "//" + window.location.hostname + "/sub/",
+        subBase: window.location.protocol + "//" + window.location.hostname + ":"+ window.location.port + "/sub/",
         tgBase: "https://t.me/",
         show(dbInbound, index) {
             this.index = index;
