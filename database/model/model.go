@@ -77,5 +77,5 @@ type Client struct {
 	Enable     bool   `json:"enable" from:"enable"`
 	TgID       string `json:"tgId" from:"tgId"`
 	SubID      string `json:"subId" from:"subId"`
-	BSubID     string `json:"bsubId" from:"bsubId"`
+	BsubID     string `json:"bsubId" from:"bsubId"`
 }
