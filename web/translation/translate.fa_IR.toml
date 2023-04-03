@@ -93,6 +93,8 @@
 [pages.inbounds]
 "title" = "کاربران"
 "totalDownUp" = "جمع آپلود/دانلود"
+"totalUsage" = "حجم کل"
+"inboundCount" = "تعداد کلاینت ها"
 "Subscription" = "لینک اشتراک"
 "Telegram" = "یوزرنیم تلگرام"
 "SubscriptionBot" = "اشتراک ربات"
