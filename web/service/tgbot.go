@@ -378,6 +378,8 @@ func (t *Tgbot) getClientUsage(chatId int64, tgUserName string) {
 		expiryTime := ""
 		if traffic.ExpiryTime == 0 {
 			expiryTime = "♾Unlimited"
+		} else if traffic.ExpiryTime < 0 {
+			expiryTime = fmt.Sprintf("%d days", traffic.ExpiryTime/-84600000)
 		} else {
 			expiryTime = time.Unix((traffic.ExpiryTime / 1000), 0).Format("2006-01-02 15:04:05")
 		}
@@ -412,6 +414,8 @@ func (t *Tgbot) searchClient(chatId int64, email string) {
 		expiryTime := ""
 		if traffic.ExpiryTime == 0 {
 			expiryTime = "♾Unlimited"
+		} else if traffic.ExpiryTime < 0 {
+			expiryTime = fmt.Sprintf("%d days", traffic.ExpiryTime/-84600000)
 		} else {
 			expiryTime = time.Unix((traffic.ExpiryTime / 1000), 0).Format("2006-01-02 15:04:05")
 		}
@@ -450,6 +454,8 @@ func (t *Tgbot) searchInbound(chatId int64, remark string) {
 			expiryTime := ""
 			if traffic.ExpiryTime == 0 {
 				expiryTime = "♾Unlimited"
+			} else if traffic.ExpiryTime < 0 {
+				expiryTime = fmt.Sprintf("%d days", traffic.ExpiryTime/-84600000)
 			} else {
 				expiryTime = time.Unix((traffic.ExpiryTime / 1000), 0).Format("2006-01-02 15:04:05")
 			}
@@ -483,6 +489,8 @@ func (t *Tgbot) searchForClient(chatId int64, query string) {
 	expiryTime := ""
 	if traffic.ExpiryTime == 0 {
 		expiryTime = "♾Unlimited"
+	} else if traffic.ExpiryTime < 0 {
+		expiryTime = fmt.Sprintf("%d days", traffic.ExpiryTime/-84600000)
 	} else {
 		expiryTime = time.Unix((traffic.ExpiryTime / 1000), 0).Format("2006-01-02 15:04:05")
 	}
@@ -560,6 +568,8 @@ func (t *Tgbot) getExhausted() string {
 			expiryTime := ""
 			if traffic.ExpiryTime == 0 {
 				expiryTime = "♾Unlimited"
+			} else if traffic.ExpiryTime < 0 {
+				expiryTime += fmt.Sprintf("%d days", traffic.ExpiryTime/-84600000)
 			} else {
 				expiryTime = time.Unix((traffic.ExpiryTime / 1000), 0).Format("2006-01-02 15:04:05")
 			}
