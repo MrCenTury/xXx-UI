@@ -1,4 +1,5 @@
-{{define "inboundInfoModal"}}
+
+    {{define "inboundInfoModal"}}
 <a-modal id="inbound-info-modal"
     v-model="infoModal.visible" title='{{ i18n "pages.inbounds.details"}}'
     :closable="true"
@@ -96,11 +97,12 @@
                         [[ DateUtil.formatMillis(infoModal.clientSettings.expiryTime) ]]
                     </a-tag>
                 </template>
+                <a-tag v-else-if="infoModal.clientSettings.expiryTime < 0" color="cyan">[[ infoModal.clientSettings.expiryTime / -84600000 ]] {{ i18n "pages.client.days" }}</a-tag>
                 <a-tag v-else color="green">{{ i18n "indefinite" }}</a-tag>
             </td>
         </tr>
     </table>
-    <table v-if="infoModal.clientSettings.subId" style="margin-bottom: 10px;">
+        <table v-if="infoModal.clientSettings.subId" style="margin-bottom: 10px;">
         <tr v-if="infoModal.clientSettings.subId">
             <a-divider>Subscription Link</a-divider>
             <td><a :href="[[ infoModal.subBase + infoModal.clientSettings.subId ]]" target="_blank">[[ infoModal.subBase + infoModal.clientSettings.subId ]]</a></td>
@@ -112,13 +114,7 @@
             <td><a :href="[[ infoModal.tgBase + infoModal.clientSettings.tgId ]]" target="_blank">@[[ infoModal.clientSettings.tgId ]]</a></td>
         </tr>
     </table>
-    <table v-if="infoModal.clientSettings.bsubId" style="margin-bottom: 10px;">
-        <tr v-if="infoModal.clientSettings.bsubId">
-            <a-divider>Subscription Bot</a-divider>
-            <td><a :href="[[ infoModal.clientSettings.bsubId ]]" target="_blank">[[ infoModal.clientSettings.bsubId ]]</a></td>
-        </tr>
-    </table>
-    </template>
+       </template>
     <template v-else>
         <a-divider></a-divider>
         <table v-if="inbound.protocol == Protocols.SHADOWSOCKS" style="margin-bottom: 10px; width: 100%;">
@@ -191,7 +187,7 @@
         inbound: new Inbound(),
         dbInbound: new DBInbound(),
         settings: null,
-        clientSettings: new Inbound.Settings(),
+        clientSettings: null,
         clientStats: [],
         upStats: 0,
         downStats: 0,
