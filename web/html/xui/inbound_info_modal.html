@@ -1,5 +1,4 @@
-
-    {{define "inboundInfoModal"}}
+{{define "inboundInfoModal"}}
 <a-modal id="inbound-info-modal"
     v-model="infoModal.visible" title='{{ i18n "pages.inbounds.details"}}'
     :closable="true"
@@ -102,7 +101,7 @@
             </td>
         </tr>
     </table>
-        <table v-if="infoModal.clientSettings.subId" style="margin-bottom: 10px;">
+    <table v-if="infoModal.clientSettings.subId" style="margin-bottom: 10px;">
         <tr v-if="infoModal.clientSettings.subId">
             <a-divider>Subscription Link</a-divider>
             <td><a :href="[[ infoModal.subBase + infoModal.clientSettings.subId ]]" target="_blank">[[ infoModal.subBase + infoModal.clientSettings.subId ]]</a></td>
@@ -114,7 +113,7 @@
             <td><a :href="[[ infoModal.tgBase + infoModal.clientSettings.tgId ]]" target="_blank">@[[ infoModal.clientSettings.tgId ]]</a></td>
         </tr>
     </table>
-       </template>
+    </template>
     <template v-else>
         <a-divider></a-divider>
         <table v-if="inbound.protocol == Protocols.SHADOWSOCKS" style="margin-bottom: 10px; width: 100%;">
