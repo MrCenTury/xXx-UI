@@ -919,16 +919,16 @@ class Inbound extends XrayCommonClass {
     isExpiry(index) {
         switch (this.protocol) {
             case Protocols.VMESS:
-                if(this.settings.vmesses[index]._expiryTime != null)
-                    return this.settings.vmesses[index]._expiryTime < new Date().getTime();
+                if(this.settings.vmesses[index].expiryTime > 0)
+                    return this.settings.vmesses[index].expiryTime < new Date().getTime();
                 return false
             case Protocols.VLESS:
-                if(this.settings.vlesses[index]._expiryTime != null)
-                    return this.settings.vlesses[index]._expiryTime < new Date().getTime();
+                if(this.settings.vlesses[index].expiryTime > 0)
+                    return this.settings.vlesses[index].expiryTime < new Date().getTime();
                 return false
                 case Protocols.TROJAN:
-                    if(this.settings.trojans[index]._expiryTime != null)
-                        return this.settings.trojans[index]._expiryTime < new Date().getTime();
+                    if(this.settings.trojans[index].expiryTime > 0)
+                        return this.settings.trojans[index].expiryTime < new Date().getTime();
                     return false
             default:
                 return false;
@@ -1431,7 +1431,7 @@ Inbound.VmessSettings = class extends Inbound.Settings {
     }
 };
 Inbound.VmessSettings.Vmess = class extends XrayCommonClass {
-    constructor(id=RandomUtil.randomUUID(), alterId=0, email=RandomUtil.randomText(), totalGB=0, expiryTime=0, enable=true, tgId='', subId='', bsubId='') {
+    constructor(id=RandomUtil.randomUUID(), alterId=0, email=RandomUtil.randomText(), totalGB=0, expiryTime=0, enable=true, tgId='', subId='') {
         super();
         this.id = id;
         this.alterId = alterId;
@@ -1441,7 +1441,6 @@ Inbound.VmessSettings.Vmess = class extends XrayCommonClass {
         this.enable = enable;
         this.tgId = tgId;
         this.subId = subId;
-        this.bsubId = bsubId;
     }
 
     static fromJson(json={}) {
@@ -1454,12 +1453,14 @@ Inbound.VmessSettings.Vmess = class extends XrayCommonClass {
             json.enable,
             json.tgId,
             json.subId,
-            json.bsubId,
         );
     }
     get _expiryTime() {
         if (this.expiryTime === 0 || this.expiryTime === "") {
             return null;
+        }
+        if (this.expiryTime < 0){
+            return this.expiryTime / -84600000;
         }
         return moment(this.expiryTime);
     }
@@ -1520,7 +1521,7 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
 
 };
 Inbound.VLESSSettings.VLESS = class extends XrayCommonClass {
-    constructor(id=RandomUtil.randomUUID(), flow='', email=RandomUtil.randomText(), totalGB=0, expiryTime=0, enable=true, tgId='', subId='', bsubId='') {
+    constructor(id=RandomUtil.randomUUID(), flow='', email=RandomUtil.randomText(), totalGB=0, expiryTime=0, enable=true, tgId='', subId='') {
         super();
         this.id = id;
         this.flow = flow;
@@ -1530,7 +1531,6 @@ Inbound.VLESSSettings.VLESS = class extends XrayCommonClass {
         this.enable = enable;
         this.tgId = tgId;
         this.subId = subId;
-        this.bsubId = bsubId;
     }
 
     static fromJson(json={}) {
@@ -1543,13 +1543,15 @@ Inbound.VLESSSettings.VLESS = class extends XrayCommonClass {
             json.enable,
             json.tgId,
             json.subId,
-            json.bsubId,
         );
       }
 
     get _expiryTime() {
         if (this.expiryTime === 0 || this.expiryTime === "") {
             return null;
+        }
+        if (this.expiryTime < 0){
+            return this.expiryTime / -84600000;
         }
         return moment(this.expiryTime);
     }
@@ -1640,7 +1642,7 @@ Inbound.TrojanSettings = class extends Inbound.Settings {
     }
 };
 Inbound.TrojanSettings.Trojan = class extends XrayCommonClass {
-    constructor(password=RandomUtil.randomSeq(10), flow='', email=RandomUtil.randomText(), totalGB=0, expiryTime=0, enable=true, tgId='', subId='', bsubId='') {
+    constructor(password=RandomUtil.randomSeq(10), flow='', email=RandomUtil.randomText(), totalGB=0, expiryTime=0, enable=true, tgId='', subId='') {
         super();
         this.password = password;
         this.flow = flow;
@@ -1650,7 +1652,6 @@ Inbound.TrojanSettings.Trojan = class extends XrayCommonClass {
         this.enable = enable;
         this.tgId = tgId;
         this.subId = subId;
-        this.bsubId = bsubId;
     }
 
     toJson() {
@@ -1663,7 +1664,6 @@ Inbound.TrojanSettings.Trojan = class extends XrayCommonClass {
             enable: this.enable,
             tgId: this.tgId,
             subId: this.subId,
-            bsubId: this.bsubId,
         };
     }
 
@@ -1677,13 +1677,15 @@ Inbound.TrojanSettings.Trojan = class extends XrayCommonClass {
             json.enable,
             json.tgId,
             json.subId,
-            json.bsubId,
         );
     }
 
     get _expiryTime() {
         if (this.expiryTime === 0 || this.expiryTime === "") {
             return null;
+        }
+        if (this.expiryTime < 0){
+            return this.expiryTime / -84600000;
         }
         return moment(this.expiryTime);
     }
