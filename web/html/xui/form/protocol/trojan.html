@@ -5,10 +5,10 @@
         <a-form layout="inline">
             <a-form-item>
                 <span slot="label">
-                    username
+                    <span>{{ i18n "pages.inbounds.Email" }}</span>
                     <a-tooltip>
                         <template slot="title">
-                            The username must be completely unique
+                            <span>{{ i18n "pages.inbounds.EmailDesc" }}</span>
                         </template>
                         <a-icon @click="getNewEmail(client)" type="sync"> </a-icon>
                     </a-tooltip>
