@@ -3,6 +3,20 @@
 
 xray panel supporting multi-protocol, **Multi-lang (English,Farsi,Chinese)**
 
+| Features        | Enable?           |
+| ------------- |:-------------:|
+| Multi-lang | :heavy_check_mark: |
+| Dark/Light Theme | :heavy_check_mark: |
+| Search in deep | :heavy_check_mark: |
+| Inbound Multi User | :heavy_check_mark: |
+| Multi User Traffic & Expiration time | :heavy_check_mark: |
+| REST API | :heavy_check_mark: |
+| Telegram BOT (admin + clients) | :heavy_check_mark: |
+| Backup database using Telegram BOT | :heavy_check_mark: |
+| Subscription link | :heavy_check_mark: |
+| Calculate expire date on first usage | :heavy_check_mark: |
+
+
 ## Install & Upgrade
 
 ```
@@ -20,6 +34,13 @@ certbot renew --dry-run
 - System Status Monitoring
 - Search within all inbounds and clients
 - Support Dark/Light theme UI
+- Support multi-user multi-protocol, web page visualization operation
+- Support for configuring more transport configurations
+- Traffic statistics, limit traffic, limit expiration time
+- Support subscription ( multi ) link
+- Detect users which are expiring or exceed traffic limit soon
+- Support https access panel (self-provided domain name + ssl certificate)
+- Support one-click SSL certificate application and automatic renewal
 - Update the Jason file for IP hiding changes and receiving the required data
 - Geosite site config update for Iran
 - Update to add user instead of email
@@ -33,7 +54,8 @@ certbot renew --dry-run
 - support https access fot WebUI
 - support SSL cert issue by Acme
 - support telegram bot notify and control
-- more functions in control menu  
+- more functions in control menu
+
 
 ## Panel Web
 ![](media/1.png)![](media/2.png)![](media/3.png)![](media/4.png)
