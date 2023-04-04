@@ -96,8 +96,6 @@
 "totalUsage" = "Total usage"
 "inboundCount" = "Number of inbound"
 "operate" = "Menu"
-"Subscription" = "Subscription"
-"Telegram" = "username Telegram"
 "enable" = "Enable"
 "remark" = "Remark"
 "protocol" = "Protocol"
@@ -143,8 +141,8 @@
 "resetAllClientTraffics" = "Reset Clients Traffic"
 "resetAllClientTrafficTitle" = "Reset all clients traffic"
 "resetAllClientTrafficContent" = "Are you sure to reset all traffics of this inbound's clients ?"
-"Email" = "Email"
-"EmailDesc" = "The Email Must Be Completely Unique"
+"Email" = "username"
+"EmailDesc" = "The Username Must Be Completely Unique"
 
 [pages.client]
 "add" = "Add client"
