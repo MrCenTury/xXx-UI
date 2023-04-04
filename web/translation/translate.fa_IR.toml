@@ -96,8 +96,6 @@
 "totalUsage" = "جمع کل"
 "inboundCount" = "تعداد سرویس ها"
 "operate" = "امکانات"
-"Subscription" = "لینک اشتراک"
-"Telegram" = "یوزرنیم تلگرام"
 "enable" = "فعال"
 "remark" = "نام"
 "protocol" = "پروتکل"
@@ -143,8 +141,8 @@
 "resetAllClientTraffics" = "ریست ترافیک کاربران"
 "resetAllClientTrafficTitle" = "ریست ترافیک کل کاربران"
 "resetAllClientTrafficContent" = "آیا مطمئن هستید که میخواهید تمام ترافیک کاربران این سرویس را ریست کنید؟"
-"Email" = "ایمیل"
-"EmailDesc" = "ایمیل باید کاملا منحصر به فرد باشد"
+"Email" = "نام کاربری"
+"EmailDesc" = "نام کاربری باید کاملا منحصر به فرد باشد"
 
 [pages.client]
 "add" = "کاربر جدید"
