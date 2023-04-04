@@ -18,7 +18,6 @@
         clientStats: [],
         index: null,
         isExpired: false,
-        delayedStart: false,
         ok() {
             ObjectUtil.execute(clientModal.confirm, clientModal.inbound, clientModal.dbInbound, clientModal.index);
         },
@@ -34,10 +33,6 @@
             this.isExpired = isEdit ? this.inbound.isExpiry(this.index) : false;
             if (!isEdit){
                 this.addClient(this.inbound.protocol, this.clients);
-            } else {
-                if (this.clients[index].expiryTime < 0){
-                    this.delayedStart = true;
-                }
             }
             this.clientStats = this.dbInbound.clientStats.find(row => row.email === this.clients[this.index].email);
             this.confirm = confirm;
@@ -86,7 +81,7 @@
             },
             get isTrafficExhausted() {
                 if(!clientStats) return false
-                if(clientStats.total <= 0) return false
+                if(clientStats.total == 0) return false
                 if(clientStats.up + clientStats.down < clientStats.total) return false
                 return true
             },
@@ -95,16 +90,10 @@
             },
             get statsColor() {
                 if(!clientStats) return 'blue'
-                if(clientStats.total <= 0) return 'blue'
+                if(clientStats.total === 0) return 'blue'
                 else if(clientStats.total > 0 && (clientStats.down+clientStats.up) < clientStats.total) return 'cyan'
                 else return 'red'
-            },
-            get delayedExpireDays() {
-                return clientModal.isEdit && this.client.expiryTime < 0 ? this.client.expiryTime / -84600000 : 0;
-            },
-            set delayedExpireDays(days){
-                this.client.expiryTime = -84600000 * days;
-            },
+            }
         },
         methods: {
             getNewEmail(client) {
