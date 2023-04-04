@@ -45,7 +45,7 @@ os_version=$(grep -i version_id /etc/os-release | cut -d \" -f2 | cut -d . -f1)
 
 [[ $SYSTEM == "CentOS" && ${os_version} -lt 7 ]] && echo -e "Please use the system 7 or higher version of the system!" && exit 1
 [[ $SYSTEM == "Fedora" && ${os_version} -lt 29 ]] && echo -e "Please use Fedora 29 or higher version system!" && exit 1
-[[ $SYSTEM == "Ubuntu" && ${os_version} -lt 16 ]] && echo -e "Please use Ubuntu 16 or higher version system!" && exit 1
+[[ $SYSTEM == "Ubuntu" && ${os_version} -lt 18 ]] && echo -e "Please use Ubuntu 16 or higher version system!" && exit 1
 [[ $SYSTEM == "Debian" && ${os_version} -lt 9 ]] && echo -e "Please use Debian 9 or higher version system!" && exit 1
 
 archAffix(){
@@ -150,7 +150,9 @@ download_xui(){
 
 panel_config() {
     clear
-    yellow "For security reasons, after the installation/ update, you need to remember the port and the account password"
+    echo -e "${yellow}Install/update finished! For security it's recommended to modify panel settings ${plain}"
+    read -p "Do you want to continue with the modification [y/n]? ": config_confirm
+    if [[ x"${config_confirm}" == x"y" || x"${config_confirm}" == x"Y" ]]; then
     read -rp "Please set the login user name [default is a random user name]: " config_account
     [[ -z $config_account ]] && config_account=$(date +%s%N | md5sum | cut -c 1-8)
     read -rp "Please set the login password. Don't include spaces [default is a random password]: " config_password
@@ -163,9 +165,12 @@ panel_config() {
             read -rp "Please set the panel access port [default ia a random port]: " config_port
             [[ -z $config_port ]] && config_port=$(shuf -i 1000-65535 -n 1)
         fi
-    done
+    done    
     /usr/local/x-ui/x-ui setting -username ${config_account} -password ${config_password} >/dev/null 2>&1
     /usr/local/x-ui/x-ui setting -port ${config_port} >/dev/null 2>&1
+    else
+        echo -e "${red}Canceled, will use the default settings.${plain}"
+    fi
 }
 
 install_xui() {
