@@ -37,11 +37,12 @@
     <a-tag v-else color="green">{{ i18n "indefinite" }}</a-tag>
 </template>                                    
 <template slot="expiryTime" slot-scope="text, client, index">
-    <template v-if="client._expiryTime > 0">
+    <template v-if="client.expiryTime > 0">
         <a-tag :color="isExpiry(record, index)? 'red' : 'blue'">
             [[ DateUtil.formatMillis(client._expiryTime) ]]
         </a-tag>
     </template>
+    <a-tag v-else-if="client.expiryTime < 0" color="cyan">[[ client._expiryTime ]] {{ i18n "pages.client.days" }}</a-tag>
     <a-tag v-else color="green">{{ i18n "indefinite" }}</a-tag>
 </template>
 {{end}}
