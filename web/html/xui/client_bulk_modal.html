@@ -51,7 +51,13 @@
             </span>
         <a-input-number v-model="clientsBulkModal.totalGB" :min="0"></a-input-number>
         </a-form-item>
-        <a-form-item>
+        <a-form-item label="{{ i18n "pages.client.delayedStart" }}">
+            <a-switch v-model="clientsBulkModal.delayedStart" @click="clientsBulkModal.expiryTime=0"></a-switch>
+        </a-form-item>
+        <a-form-item label="{{ i18n "pages.client.expireDays" }}" v-if="clientsBulkModal.delayedStart">
+            <a-input type="number" v-model.number="delayedExpireDays" :min="0"></a-input>
+        </a-form-item>
+        <a-form-item v-else>
             <span slot="label">
                 <span >{{ i18n "pages.inbounds.expireDate" }}</span>
                 <a-tooltip>
@@ -88,6 +94,7 @@
         emailPostfix: "",
         subId: "",
         tgId: "",
+        delayedStart: false,
         ok() {
             method=clientsBulkModal.emailMethod;
             if(method>1){
@@ -119,7 +126,7 @@
             this.confirm = confirm;
             this.quantity = 1;
             this.totalGB = 0;
-            this.expiryTime = '';
+            this.expiryTime = 0;
             this.emailMethod= 0;
             this.firstNum= 1;
             this.lastNum= 1;
@@ -130,6 +137,7 @@
             this.dbInbound = new DBInbound(dbInbound);
             this.inbound = dbInbound.toInbound();
             this.clients = this.getClients(this.inbound.protocol, this.inbound.settings);
+            this.delayedStart = false;
         },
         getClients(protocol, clientSettings) {
             switch(protocol){
@@ -163,6 +171,12 @@
             clientsBulkModal,
             get inbound() {
                 return this.clientsBulkModal.inbound;
+            },
+            get delayedExpireDays() {
+            return this.clientsBulkModal.expiryTime < 0 ? this.clientsBulkModal.expiryTime / -84600000 : 0;
+            },
+            set delayedExpireDays(days){
+                this.clientsBulkModal.expiryTime = -84600000 * days;
             },
         },
     });
