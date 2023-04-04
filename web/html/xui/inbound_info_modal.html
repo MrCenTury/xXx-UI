@@ -96,6 +96,7 @@
                         [[ DateUtil.formatMillis(infoModal.clientSettings.expiryTime) ]]
                     </a-tag>
                 </template>
+                <a-tag v-else-if="infoModal.clientSettings.expiryTime < 0" color="cyan">[[ infoModal.clientSettings.expiryTime / -84600000 ]] {{ i18n "pages.client.days" }}</a-tag>
                 <a-tag v-else color="green">{{ i18n "indefinite" }}</a-tag>
             </td>
         </tr>
@@ -185,7 +186,7 @@
         inbound: new Inbound(),
         dbInbound: new DBInbound(),
         settings: null,
-        clientSettings: new Inbound.Settings(),
+        clientSettings: null,
         clientStats: [],
         upStats: 0,
         downStats: 0,
