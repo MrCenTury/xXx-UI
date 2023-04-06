@@ -7,6 +7,7 @@ require (
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.9.0
 	github.com/go-telegram-bot-api/telegram-bot-api/v5 v5.5.1
+	github.com/goccy/go-json v0.10.0
 	github.com/nicksnyder/go-i18n/v2 v2.2.1
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
 	github.com/pelletier/go-toml/v2 v2.0.7
@@ -14,7 +15,7 @@ require (
 	github.com/shirou/gopsutil/v3 v3.23.2
 	github.com/xtls/xray-core v1.8.0
 	go.uber.org/atomic v1.10.0
-	golang.org/x/text v0.8.0
+	golang.org/x/text v0.9.0
 	google.golang.org/grpc v1.54.0
 	gorm.io/driver/sqlite v1.4.4
 	gorm.io/gorm v1.24.6
@@ -29,7 +30,6 @@ require (
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.11.2 // indirect
-	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
