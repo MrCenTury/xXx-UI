@@ -1,14 +1,10 @@
 package controller
 
-import (
-	"github.com/gin-gonic/gin"
-)
+import "github.com/gin-gonic/gin"
 
 type APIController struct {
 	BaseController
-
 	inboundController *InboundController
-	settingController *SettingController
 }
 
 func NewAPIController(g *gin.RouterGroup) *APIController {
@@ -26,6 +22,12 @@ func (a *APIController) initRouter(g *gin.RouterGroup) {
 	g.POST("/add", a.addInbound)
 	g.POST("/del/:id", a.delInbound)
 	g.POST("/update/:id", a.updateInbound)
+	g.POST("/addClient/", a.addInboundClient)
+	g.POST("/delClient/:email", a.delInboundClient)
+	g.POST("/updateClient/:index", a.updateInboundClient)
+	g.POST("/:id/resetClientTraffic/:email", a.resetClientTraffic)
+	g.POST("/resetAllTraffics", a.resetAllTraffics)
+	g.POST("/resetAllClientTraffics/:id", a.resetAllClientTraffics)
 
 	a.inboundController = NewInboundController(g)
 }
@@ -44,4 +46,22 @@ func (a *APIController) delInbound(c *gin.Context) {
 }
 func (a *APIController) updateInbound(c *gin.Context) {
 	a.inboundController.updateInbound(c)
+}
+func (a *APIController) addInboundClient(c *gin.Context) {
+	a.inboundController.addInboundClient(c)
+}
+func (a *APIController) delInboundClient(c *gin.Context) {
+	a.inboundController.delInboundClient(c)
+}
+func (a *APIController) updateInboundClient(c *gin.Context) {
+	a.inboundController.updateInboundClient(c)
+}
+func (a *APIController) resetClientTraffic(c *gin.Context) {
+	a.inboundController.resetClientTraffic(c)
+}
+func (a *APIController) resetAllTraffics(c *gin.Context) {
+	a.inboundController.resetAllTraffics(c)
+}
+func (a *APIController) resetAllClientTraffics(c *gin.Context) {
+	a.inboundController.resetAllClientTraffics(c)
 }
