@@ -32,6 +32,7 @@
             this.clients = this.getClients(this.inbound.protocol, this.inbound.settings);
             this.index = index === null ? this.clients.length : index;
             this.isExpired = isEdit ? this.inbound.isExpiry(this.index) : false;
+            this.delayedStart = false;
             if (!isEdit){
                 this.addClient(this.inbound.protocol, this.clients);
             } else {
@@ -100,10 +101,10 @@
                 else return 'red'
             },
             get delayedExpireDays() {
-                return clientModal.isEdit && this.client.expiryTime < 0 ? this.client.expiryTime / -84600000 : 0;
+                return this.client && this.client.expiryTime < 0 ? this.client.expiryTime / -86400000 : 0;
             },
             set delayedExpireDays(days){
-                this.client.expiryTime = -84600000 * days;
+                this.client.expiryTime = -86400000 * days;
             },
         },
         methods: {
