@@ -310,7 +310,7 @@
                 if (!msg.success) {
                     return;
                 }
-                this.expireDiff = msg.obj.expireDiff * 84600000;
+                this.expireDiff = msg.obj.expireDiff * 86400000;
                 this.trafficDiff = msg.obj.trafficDiff * 1073741824;
             },
             setInbounds(dbInbounds) {
