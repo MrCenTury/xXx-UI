@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/base64"
+	"strings"
 	"x-ui/web/service"
 
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,7 @@ func (a *SUBController) initRouter(g *gin.RouterGroup) {
 
 func (a *SUBController) subs(c *gin.Context) {
 	subId := c.Param("subid")
-	host := c.Request.Host
+	host := strings.Split(c.Request.Host, ":")[0]
 	subs, err := a.subService.GetSubs(subId, host)
 	if err != nil {
 		c.String(400, "Error!")
