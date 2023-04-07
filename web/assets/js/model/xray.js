@@ -93,6 +93,7 @@ const UTLS_FINGERPRINT = {
 };
 
 const ALPN_OPTION = {
+    H3: "h3",
     H2: "h2",
     HTTP1: "http/1.1",
 };
@@ -1460,7 +1461,7 @@ Inbound.VmessSettings.Vmess = class extends XrayCommonClass {
             return null;
         }
         if (this.expiryTime < 0){
-            return this.expiryTime / -84600000;
+            return this.expiryTime / -86400000;
         }
         return moment(this.expiryTime);
     }
@@ -1551,7 +1552,7 @@ Inbound.VLESSSettings.VLESS = class extends XrayCommonClass {
             return null;
         }
         if (this.expiryTime < 0){
-            return this.expiryTime / -84600000;
+            return this.expiryTime / -86400000;
         }
         return moment(this.expiryTime);
     }
@@ -1685,7 +1686,7 @@ Inbound.TrojanSettings.Trojan = class extends XrayCommonClass {
             return null;
         }
         if (this.expiryTime < 0){
-            return this.expiryTime / -84600000;
+            return this.expiryTime / -86400000;
         }
         return moment(this.expiryTime);
     }
