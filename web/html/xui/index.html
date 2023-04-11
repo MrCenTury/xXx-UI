@@ -76,24 +76,12 @@
                 <a-row>
                     <a-col :sm="24" :md="12">
                         <a-card hoverable :class="siderDrawer.isDarkTheme ? darkClass : ''">
-                            {{ i18n "pages.index.xrayStatus" }}:
-                            <a-tag :color="status.xray.color">[[ status.xray.state ]]</a-tag>
-                            <a-tooltip v-if="status.xray.state === State.Error">
-                                <template slot="title">
-                                    <p v-for="line in status.xray.errorMsg.split('\n')">[[ line ]]</p>
-                                </template>
-                                <a-icon type="question-circle" theme="filled"></a-icon>
-                            </a-tooltip>
-                            <a-tag color="green" style="cursor: pointer;" @click="openSelectV2rayVersion">[[ status.xray.version ]]</a-tag>
-                            <a-tag color="blue" style="cursor: pointer;" @click="stopXrayService">{{ i18n "pages.index.stopXray" }}</a-tag>
-                            <a-tag color="blue" style="cursor: pointer;" @click="restartXrayService">{{ i18n "pages.index.restartXray" }}</a-tag>                    
-                            <a-tag color="blue" style="cursor: pointer;" @click="openSelectV2rayVersion">{{ i18n "pages.index.xraySwitch" }}</a-tag>
+                            x-ui: <a-tag color="green">{{ .cur_ver }}</a-tag>
+                            xray: <a-tag color="green" style="cursor: pointer;" @click="openSelectV2rayVersion">[[ status.xray.version ]]</a-tag>
                         </a-card>
                     </a-col>
                     <a-col :sm="24" :md="12">
                         <a-card hoverable :class="siderDrawer.isDarkTheme ? darkClass : ''">
-                            x-ui: <a-tag color="green">{{ .cur_ver }}</a-tag>
-                            <a-tag color="blue" style="cursor: pointer;" @click="openLogs(20)">Logs</a-tag>
                             {{ i18n "pages.index.operationHours" }}:
                             <a-tag color="green">[[ formatSecond(status.uptime) ]]</a-tag>
                             <a-tooltip>
@@ -102,6 +90,29 @@
                                 </template>
                                 <a-icon type="question-circle" theme="filled"></a-icon>
                             </a-tooltip>
+                        </a-card>
+                    </a-col>
+                    <a-col :sm="24" :md="12">
+                        <a-card hoverable :class="siderDrawer.isDarkTheme ? darkClass : ''">
+                            {{ i18n "pages.index.xrayStatus" }}:
+                            <a-tag :color="status.xray.color">[[ status.xray.state ]]</a-tag>
+                            <a-tooltip v-if="status.xray.state === State.Error">
+                                <template slot="title">
+                                    <p v-for="line in status.xray.errorMsg.split('\n')">[[ line ]]</p>
+                                </template>
+                                <a-icon type="question-circle" theme="filled"></a-icon>
+                            </a-tooltip>
+                            <a-tag color="blue" style="cursor: pointer;" @click="stopXrayService">{{ i18n "pages.index.stopXray" }}</a-tag>
+                            <a-tag color="blue" style="cursor: pointer;" @click="restartXrayService">{{ i18n "pages.index.restartXray" }}</a-tag>                    
+                            <a-tag color="blue" style="cursor: pointer;" @click="openSelectV2rayVersion">{{ i18n "pages.index.xraySwitch" }}</a-tag>
+                        </a-card>
+                    </a-col>
+                    <a-col :sm="24" :md="12">
+                        <a-card hoverable :class="siderDrawer.isDarkTheme ? darkClass : ''">
+                            {{ i18n "menu.link" }}:
+                            <a-tag color="blue" style="cursor: pointer;" @click="openLogs(20)">Logs</a-tag>
+                            <a-tag color="blue" style="cursor: pointer;" @click="openConfig">Config</a-tag>
+                            <a-tag color="blue" style="cursor: pointer;" @click="getBackup">Backup</a-tag>
                         </a-card>
                     </a-col>
                     <a-col :sm="24" :md="12">
@@ -172,11 +183,11 @@
                             </a-row>
                         </a-card>
                     </a-col>
-                      </a-row>
-                        </transition>
-                    </a-layout-content>
-                </a-layout>
-                <a-modal id="version-modal" v-model="versionModal.visible" title='{{ i18n "pages.index.xraySwitch" }}'
+                </a-row>
+            </transition>
+        </a-layout-content>
+    </a-layout>
+    <a-modal id="version-modal" v-model="versionModal.visible" title='{{ i18n "pages.index.xraySwitch" }}'
              :closable="true" @ok="() => versionModal.visible = false"
              :class="siderDrawer.isDarkTheme ? darkClass : ''"
              footer="">
@@ -221,6 +232,7 @@
     </a-modal>
 </a-layout>
 {{template "js" .}}
+{{template "textModal"}}
 <script>
 
     const State = {
@@ -401,6 +413,18 @@
                     return;
                 }
                 logModal.show(msg.obj,rows);
+            },
+            async openConfig(){
+                this.loading(true);
+                const msg = await HttpUtil.post('server/getConfigJson');
+                this.loading(false);
+                if (!msg.success) {
+                    return;
+                }
+                txtModal.show('config.json',JSON.stringify(msg.obj, null, 2),'config.json');
+            },
+            getBackup(){
+                window.location = basePath + 'server/getDb';
             }
         },
         async mounted() {
