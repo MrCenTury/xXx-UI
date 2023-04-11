@@ -287,6 +287,8 @@
             searchedInbounds: [],
             expireDiff: 0,
             trafficDiff: 0,
+            defaultCert: '',
+            defaultKey: '',
             clientCount: {},
         },
         methods: {
@@ -303,15 +305,17 @@
                 this.setInbounds(msg.obj);
                 this.searchKey = '';
             },
-            async getThresholds() {
+            async getDefaultSettings() {
                 this.loading();
-                const msg = await HttpUtil.post('/xui/setting/thresholds');
+                const msg = await HttpUtil.post('/xui/setting/defaultSettings');
                 this.loading(false);
                 if (!msg.success) {
                     return;
                 }
                 this.expireDiff = msg.obj.expireDiff * 86400000;
                 this.trafficDiff = msg.obj.trafficDiff * 1073741824;
+                this.defaultCert = msg.obj.defaultCert;
+                this.defaultKey = msg.obj.defaultKey;
             },
             setInbounds(dbInbounds) {
                 this.inbounds.splice(0);
@@ -344,7 +348,7 @@
                                 depleted.push(client.email);
                             } else {
                                 if ((client.expiryTime > 0 && (client.expiryTime-now < this.expireDiff)) ||
-                                (client.total > 0 && (client.total-client.up+client.down < this.trafficDiff ))) expiring.push(client.email);
+                                (client.total > 0 && (client.total-(client.up+client.down) < this.trafficDiff ))) expiring.push(client.email);
                             }
                         });
                     } else {
@@ -572,7 +576,7 @@
                     id: dbInbound.id,
                     settings: inbound.settings.toString(),
                 };
-                await this.submit('/xui/inbound/addClient', data);
+                await this.submit('/xui/inbound/addClient/', data);
             },
             async updateClient(inbound, dbInbound, index) {
                 const data = {
@@ -744,7 +748,7 @@
             }, 500)
         },
         mounted() {
-            this.getThresholds();
+            this.getDefaultSettings();
             this.getDBInbounds();
         },
         computed: {
