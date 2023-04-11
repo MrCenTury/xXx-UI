@@ -141,8 +141,9 @@
 "resetAllClientTraffics" = "ریست ترافیک کاربران"
 "resetAllClientTrafficTitle" = "ریست ترافیک کل کاربران"
 "resetAllClientTrafficContent" = "آیا مطمئن هستید که میخواهید تمام ترافیک کاربران این سرویس را ریست کنید؟"
-"Email" = "نام کاربری"
-"EmailDesc" = "نام کاربری باید کاملا منحصر به فرد باشد"
+"Email" = "ایمیل"
+"EmailDesc" = "ایمیل باید کاملا منحصر به فرد باشد"
+"setDefaultCert" = "استفاده از گواهی پنل"
 
 [pages.client]
 "add" = "کاربر جدید"
