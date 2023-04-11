@@ -143,6 +143,7 @@
 "resetAllClientTrafficContent" = "您确定要重置此入站客户端的所有流量吗？"
 "Email" = "电子邮件"
 "EmailDesc" = "电子邮件必须完全唯"
+"setDefaultCert" = "从面板设置证书"
 
 [pages.client]
 "add" = "添加客户端"
