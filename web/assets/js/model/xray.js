@@ -478,7 +478,7 @@ class TlsStreamSettings extends XrayCommonClass {
                 maxVersion = TLS_VERSION_OPTION.TLS12,
                 cipherSuites = '',
                 certificates=[new TlsStreamSettings.Cert()],
-                alpn=[''],
+                alpn=[],
                 settings=[new TlsStreamSettings.Settings()]) {
         super();
         this.server = serverName;
@@ -1515,7 +1515,7 @@ Inbound.VLESSSettings = class extends Inbound.Settings {
     toJson() {
         return {
             clients: Inbound.VLESSSettings.toJsonArray(this.vlesses),
-            decryption: this.decryption,
+            decryption: 'none',
             fallbacks: Inbound.VLESSSettings.toJsonArray(this.fallbacks),
         };
     }
