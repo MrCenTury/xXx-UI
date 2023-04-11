@@ -141,8 +141,9 @@
 "resetAllClientTraffics" = "Reset Clients Traffic"
 "resetAllClientTrafficTitle" = "Reset all clients traffic"
 "resetAllClientTrafficContent" = "Are you sure to reset all traffics of this inbound's clients ?"
-"Email" = "username"
-"EmailDesc" = "The Username Must Be Completely Unique"
+"Email" = "Email"
+"EmailDesc" = "The Email Must Be Completely Unique"
+"setDefaultCert" = "Set cert from panel"
 
 [pages.client]
 "add" = "Add client"
