@@ -104,16 +104,13 @@ func (s *XrayService) GetXrayConfig() (*xray.Config, error) {
 			}
 
 			// clear client config for additional parameters
-			indexDecrease := 0
-			for index, client := range clients {
+			var final_clients []interface{}
+			for _, client := range clients {
 
 				c := client.(map[string]interface{})
 
-				// remove disabled clients
 				if c["enable"] != nil {
 					if enable, ok := c["enable"].(bool); ok && !enable {
-						clients = RemoveIndex(clients, index-indexDecrease)
-						indexDecrease++
 						continue
 					}
 				}
@@ -122,10 +119,10 @@ func (s *XrayService) GetXrayConfig() (*xray.Config, error) {
 						delete(c, key)
 					}
 				}
-				clients[index-indexDecrease] = interface{}(c)
+				final_clients = append(final_clients, interface{}(c))
 			}
 
-			settings["clients"] = clients
+			settings["clients"] = final_clients
 			modifiedSettings, err := json.Marshal(settings)
 			if err != nil {
 				return nil, err
