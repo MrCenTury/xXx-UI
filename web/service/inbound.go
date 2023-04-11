@@ -425,25 +425,34 @@ func (s *InboundService) adjustTraffics(traffics []*xray.ClientTraffic) (full_tr
 			}
 			continue
 		}
-		// get settings clients
-		settings := map[string][]model.Client{}
-		json.Unmarshal([]byte(inbound.Settings), &settings)
-		clients := settings["clients"]
+		// get clients
+		clients, err := s.getClients(inbound)
 		needUpdate := false
-		for client_index, client := range clients {
-			if traffic.Email == client.Email {
-				if client.ExpiryTime < 0 {
-					clients[client_index].ExpiryTime = (time.Now().Unix() * 1000) - client.ExpiryTime
-					needUpdate = true
+		if err == nil {
+			for client_index, client := range clients {
+				if traffic.Email == client.Email {
+					if client.ExpiryTime < 0 {
+						clients[client_index].ExpiryTime = (time.Now().Unix() * 1000) - client.ExpiryTime
+						needUpdate = true
+					}
+					client_traffic.ExpiryTime = client.ExpiryTime
+					client_traffic.Total = client.TotalGB
+					break
 				}
-				client_traffic.ExpiryTime = client.ExpiryTime
-				client_traffic.Total = client.TotalGB
-				break
 			}
 		}
 
 		if needUpdate {
-			settings["clients"] = clients
+			settings := map[string]interface{}{}
+			json.Unmarshal([]byte(inbound.Settings), &settings)
+
+			// Convert clients to []interface to update clients in settings
+			var clientsInterface []interface{}
+			for _, c := range clients {
+				clientsInterface = append(clientsInterface, interface{}(c))
+			}
+
+			settings["clients"] = clientsInterface
 			modifiedSettings, err := json.MarshalIndent(settings, "", "  ")
 			if err != nil {
 				return nil, err
