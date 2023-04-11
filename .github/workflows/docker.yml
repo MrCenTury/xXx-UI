@@ -25,7 +25,6 @@ jobs:
           type=ref,event=branch
           type=ref,event=tag
           type=pep440,pattern={{version}}
-
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
