@@ -194,11 +194,9 @@ func (s *ServerService) GetXrayVersions() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	var versions []string
+	versions := make([]string, 0, len(releases))
 	for _, release := range releases {
-		if release.TagName >= "v1.8.0" {
-			versions = append(versions, release.TagName)
-		}
+		versions = append(versions, release.TagName)
 	}
 	return versions, nil
 }
