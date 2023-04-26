@@ -149,6 +149,7 @@ download_xui(){
 }
 
 panel_config() {
+/usr/local/x-ui/x-ui migrate
     clear
     echo -e "${yellow}Install/update finished! For security it's recommended to modify panel settings ${plain}"
     read -p "Do you want to continue with the modification [y/n]? ": config_confirm
