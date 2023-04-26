@@ -124,3 +124,4 @@ jobs:
           file: x-ui-linux-s390x.tar.gz
           asset_name: x-ui-linux-s390x.tar.gz
           prerelease: true
+
