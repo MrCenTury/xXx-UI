@@ -194,9 +194,11 @@ func (s *ServerService) GetXrayVersions() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	versions := make([]string, 0, len(releases))
+	var versions []string
 	for _, release := range releases {
-		versions = append(versions, release.TagName)
+		if release.TagName >= "v1.8.0" {
+			versions = append(versions, release.TagName)
+		}
 	}
 	return versions, nil
 }
@@ -389,4 +391,30 @@ func (s *ServerService) GetDb() ([]byte, error) {
 	}
 
 	return fileContents, nil
+}
+
+func (s *ServerService) GetNewX25519Cert() (interface{}, error) {
+	// Run the command
+	cmd := exec.Command(xray.GetBinaryPath(), "x25519")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err != nil {
+		return nil, err
+	}
+
+	lines := strings.Split(out.String(), "\n")
+
+	privateKeyLine := strings.Split(lines[0], ":")
+	publicKeyLine := strings.Split(lines[1], ":")
+
+	privateKey := strings.TrimSpace(privateKeyLine[1])
+	publicKey := strings.TrimSpace(publicKeyLine[1])
+
+	keyPair := map[string]interface{}{
+		"privateKey": privateKey,
+		"publicKey":  publicKey,
+	}
+
+	return keyPair, nil
 }
