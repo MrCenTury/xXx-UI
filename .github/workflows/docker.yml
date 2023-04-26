@@ -1,18 +1,12 @@
 name: Docker Image CI
 on:
   push:
-    branches: [ master ]
+    tags:
+      - "*"
   workflow_dispatch:
-      inputs:
-        project:
-          description: 'Project'
-          required: true
-          default: 
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -20,29 +14,42 @@ jobs:
       with:
         submodules: true
    
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v4
+      with:
+        images: |
+          MrCenTury/xXx-UI
+          ghcr.io/MrCenTury/xXx-UI
+        tags: |
+          type=ref,event=branch
+          type=ref,event=tag
+          type=pep440,pattern={{version}}
+
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
 
-
-    - name: Docker Hub login
-      env:
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-        DOCKERHUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
-      run: |
-        echo "${DOCKERHUB_TOKEN}" | docker login --username ${DOCKERHUB_USERNAME} --password-stdin
     - name: Set up Docker Buildx
-      id: buildx
-      uses: crazy-max/ghaction-docker-buildx@v3
-      with:
-        buildx-version: latest
+      uses: docker/setup-buildx-action@v2
 
-    - name: Build Dockerfile
-      env:
-        DOCKERHUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-        DOCKERHUB_REPO: ${{ secrets.DOCKER_HUB_REPOSITORY }}
-      run: |
-        docker buildx build \
-        --platform=linux/amd64,linux/arm64 \
-        --output "type=image,push=true" \
-        --file ./Dockerfile ./ \
-        --tag $(echo "${DOCKERHUB_USERNAME}" | tr '[:upper:]' '[:lower:]')/${{ github.event.inputs.project }}:latest
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+    - name: Login to GHCR
+      uses: docker/login-action@v2
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and push
+      uses: docker/build-push-action@v4
+      with:
+        context: .
+        push: true
+        platforms: linux/amd64,linux/arm64/v8
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
