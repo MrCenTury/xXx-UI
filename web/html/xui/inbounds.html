@@ -67,8 +67,27 @@
                     <a-card hoverable :class="siderDrawer.isDarkTheme ? darkClass : ''">
                         <div slot="title">
                             <a-button type="primary" icon="plus" @click="openAddInbound">{{ i18n "pages.inbounds.addInbound" }}</a-button>
-                            <a-button type="primary" icon="export" @click="exportAllLinks">{{ i18n "pages.inbounds.export" }}</a-button>
-                            <a-button type="primary" icon="reload" @click="resetAllTraffic">{{ i18n "pages.inbounds.resetAllTraffic" }}</a-button>
+                            <a-dropdown :trigger="['click']">
+                                <a-button type="primary" icon="menu">{{ i18n "pages.inbounds.generalActions" }}</a-button>
+                                <a-menu slot="overlay" @click="a => generalActions(a)" :theme="siderDrawer.theme">
+                                    <a-menu-item key="export">
+                                        <a-icon type="export"></a-icon>
+                                        {{ i18n "pages.inbounds.export" }}
+                                    </a-menu-item>
+                                    <a-menu-item key="resetInbounds">
+                                        <a-icon type="reload"></a-icon>
+                                        {{ i18n "pages.inbounds.resetAllTraffic" }}
+                                    </a-menu-item>
+                                    <a-menu-item key="resetClients">
+                                        <a-icon type="file-done"></a-icon>
+                                        {{ i18n "pages.inbounds.resetAllClientTraffics" }}
+                                    </a-menu-item>
+                                    <a-menu-item key="delDepletedClients">
+                                        <a-icon type="rest"></a-icon>
+                                        {{ i18n "pages.inbounds.delDepletedClients" }}
+                                    </a-menu-item>
+                                </a-menu>
+                            </a-dropdown>
                         </div>
                         <a-input v-model.lazy="searchKey" placeholder="{{ i18n "search" }}" autofocus style="max-width: 300px"></a-input>
                         <a-table :columns="columns" :row-key="dbInbound => dbInbound.id"
@@ -79,7 +98,7 @@
                                  @change="() => getDBInbounds()">
                             <template slot="action" slot-scope="text, dbInbound">
                                 <a-dropdown :trigger="['click']">
-                                  <a-button type="primary" @click="e => e.preventDefault()">{{ i18n "pages.inbounds.operate" }}</a-button>
+                                    <a-icon @click="e => e.preventDefault()" type="menu"></a-icon>
                                     <a-menu slot="overlay" @click="a => clickAction(a, dbInbound)" :theme="siderDrawer.theme">
                                         <a-menu-item v-if="dbInbound.isSS" key="qrcode">
                                             <a-icon type="qrcode"></a-icon>
@@ -100,11 +119,15 @@
                                             </a-menu-item>
                                             <a-menu-item key="resetClients">
                                                 <a-icon type="file-done"></a-icon>
-                                                {{ i18n "pages.inbounds.resetAllClientTraffics"}}
+                                                {{ i18n "pages.inbounds.resetInboundClientTraffics"}}
                                             </a-menu-item>
                                             <a-menu-item key="export">
                                                 <a-icon type="export"></a-icon>
                                                 {{ i18n "pages.inbounds.export"}}
+                                            </a-menu-item>
+                                            <a-menu-item key="delDepletedClients">
+                                                <a-icon type="rest"></a-icon>
+                                                {{ i18n "pages.inbounds.delDepletedClients" }}
                                             </a-menu-item>
                                         </template>
                                         <template v-else>
@@ -132,7 +155,7 @@
                                 <template v-if="dbInbound.isVMess || dbInbound.isVLess || dbInbound.isTrojan || dbInbound.isSS">
                                     <a-tag style="margin:0;" color="green">[[ dbInbound.toInbound().stream.network ]]</a-tag>
                                     <a-tag style="margin:0;" v-if="dbInbound.toInbound().stream.isTls" color="cyan">tls</a-tag>
-                                    <a-tag style="margin:0;" v-if="dbInbound.toInbound().stream.isXTls" color="cyan">xtls</a-tag>
+                                    <a-tag style="margin:0;" v-if="dbInbound.toInbound().stream.isReality" color="cyan">reality</a-tag>
                                 </template>
                             </template>
                             <template slot="clients" slot-scope="text, dbInbound">
@@ -209,11 +232,10 @@
 </a-layout>
 {{template "js" .}}
 <script>
-
     const columns = [{
         title: '{{ i18n "pages.inbounds.operate" }}',
         align: 'center',
-        width: 30,
+        width: 40,
         scopedSlots: { customRender: 'action' },
     }, {
         title: '{{ i18n "pages.inbounds.enable" }}',
@@ -221,7 +243,7 @@
         width: 40,
         scopedSlots: { customRender: 'enable' },
     }, {
-        title: "Id",
+        title: "ID",
         align: 'center',
         dataIndex: "id",
         width: 30,
@@ -388,6 +410,22 @@
                     });
                 }
             },
+            generalActions(action){
+                switch (action.key) {
+                    case "export":
+                        this.exportAllLinks();
+                        break;
+                    case "resetInbounds":
+                        this.resetAllTraffic();
+                        break;
+                    case "resetClients":
+                        this.resetAllClientTraffics(-1);
+                        break;
+                    case "delDepletedClients":
+                        this.delDepletedClients(-1)
+                        break;
+                }
+            },
             clickAction(action, dbInbound) {
                 switch (action.key) {
                     case "qrcode":
@@ -419,6 +457,9 @@
                         break;
                     case "delete":
                         this.delInbound(dbInbound.id);
+                        break;
+                    case "delDepletedClients":
+                        this.delDepletedClients(dbInbound.id)
                         break;
                 }
             },
@@ -529,9 +570,9 @@
                     title: '{{ i18n "pages.client.add"}}',
                     okText: '{{ i18n "pages.client.submitAdd"}}',
                     dbInbound: dbInbound,
-                    confirm: async (inbound, dbInbound, index) => {
+                    confirm: async (clients, dbInboundId) => {
                         clientModal.loading();
-                        await this.addClient(inbound, dbInbound);
+                        await this.addClient(clients, dbInboundId);
                         clientModal.close();
                     },
                     isEdit: false
@@ -543,9 +584,9 @@
                     title: '{{ i18n "pages.client.bulk"}} ' + dbInbound.remark,
                     okText: '{{ i18n "pages.client.bulk"}}',
                     dbInbound: dbInbound,
-                    confirm: async (inbound, dbInbound) => {
+                    confirm: async (clients, dbInboundId) => {
                         clientsBulkModal.loading();
-                        await this.addClient(inbound, dbInbound);
+                        await this.addClient(clients, dbInboundId);
                         clientsBulkModal.close();
                     },
                 });
@@ -559,9 +600,9 @@
                     okText: '{{ i18n "pages.client.submitEdit"}}',
                     dbInbound: dbInbound,
                     index: index,
-                    confirm: async (inbound, dbInbound, index) => {
+                    confirm: async (client, dbInboundId, clientId) => {
                         clientModal.loading();
-                        await this.updateClient(inbound, dbInbound, index);
+                        await this.updateClient(client, dbInboundId, clientId);
                         clientModal.close();
                     },
                     isEdit: true
@@ -571,19 +612,19 @@
                 firstKey = Object.keys(client)[0];
                 return clients.findIndex(c => c[firstKey] === client[firstKey]);
             },
-            async addClient(inbound, dbInbound) {
+            async addClient(clients, dbInboundId) {
                 const data = {
-                    id: dbInbound.id,
-                    settings: inbound.settings.toString(),
+                    id: dbInboundId,
+                    settings: '{"clients": [' + clients.toString() +']}',
                 };
-                await this.submit('/xui/inbound/addClient/', data);
+                await this.submit(`/xui/inbound/addClient`, data);
             },
-            async updateClient(inbound, dbInbound, index) {
+            async updateClient(client, dbInboundId, clientId) {
                 const data = {
-                    id: dbInbound.id,
-                    settings: inbound.settings.toString(),
+                    id: dbInboundId,
+                    settings: '{"clients": [' + client.toString() +']}',
                 };
-                await this.submit(`/xui/inbound/updateClient/${index}`, data);
+                await this.submit(`/xui/inbound/updateClient/${clientId}`, data);
             },
             resetTraffic(dbInboundId) {
                 dbInbound = this.dbInbounds.find(row => row.id === dbInboundId);
@@ -613,22 +654,14 @@
             },
             delClient(dbInboundId,client) {
                 dbInbound = this.dbInbounds.find(row => row.id === dbInboundId);
-                newDbInbound = new DBInbound(dbInbound);
-                inbound = newDbInbound.toInbound();
-                clients = this.getClients(dbInbound.protocol, inbound.settings);
-                index = this.findIndexOfClient(clients, client);
-                clients.splice(index, 1);
-                const data = {
-                    id: dbInboundId,
-                    settings: inbound.settings.toString(),
-                };
+                clientId = dbInbound.protocol == "trojan" ? client.password : client.id;
                 this.$confirm({
                     title: '{{ i18n "pages.inbounds.deleteInbound"}}',
                     content: '{{ i18n "pages.inbounds.deleteInboundContent"}}',
                     class: siderDrawer.isDarkTheme ? darkClass : '',
                     okText: '{{ i18n "delete"}}',
                     cancelText: '{{ i18n "cancel"}}',
-                    onOk: () => this.submit('/xui/inbound/delClient/' + client.email, data),
+                    onOk: () => this.submit(`/xui/inbound/${dbInboundId}/delClient/${clientId}`),
                 });
             },
             getClients(protocol, clientSettings) {
@@ -656,8 +689,9 @@
                 inbound = dbInbound.toInbound();
                 clients = this.getClients(dbInbound.protocol, inbound.settings);
                 index = this.findIndexOfClient(clients, client);
-                clients[index].enable = ! clients[index].enable
-                await this.updateClient(inbound, dbInbound, index);
+                clients[index].enable = !clients[index].enable;
+                clientId = dbInbound.protocol == "trojan" ? clients[index].password : clients[index].id;
+                await this.updateClient(clients[index],dbInboundId, clientId);
                 this.loading(false);
             },
             async submit(url, data) {
@@ -697,12 +731,22 @@
             },
             resetAllClientTraffics(dbInboundId) {
                 this.$confirm({
-                    title: '{{ i18n "pages.inbounds.resetAllClientTrafficTitle"}}',
-                    content: '{{ i18n "pages.inbounds.resetAllClientTrafficContent"}}',
+                    title: dbInboundId>0 ? '{{ i18n "pages.inbounds.resetInboundClientTrafficTitle"}}' : '{{ i18n "pages.inbounds.resetAllClientTrafficTitle"}}',
+                    content: dbInboundId>0 ? '{{ i18n "pages.inbounds.resetInboundClientTrafficContent"}}' : '{{ i18n "pages.inbounds.resetAllClientTrafficContent"}}',
                     class: siderDrawer.isDarkTheme ? darkClass : '',
                     okText: '{{ i18n "reset"}}',
                     cancelText: '{{ i18n "cancel"}}',
                     onOk: () => this.submit('/xui/inbound/resetAllClientTraffics/' + dbInboundId),
+                })
+            },
+            delDepletedClients(dbInboundId) {
+                this.$confirm({
+                    title: '{{ i18n "pages.inbounds.delDepletedClientsTitle"}}',
+                    content: '{{ i18n "pages.inbounds.delDepletedClientsContent"}}',
+                    class: siderDrawer.isDarkTheme ? darkClass : '',
+                    okText: '{{ i18n "reset"}}',
+                    cancelText: '{{ i18n "cancel"}}',
+                    onOk: () => this.submit('/xui/inbound/delDepletedClients/' + dbInboundId),
                 })
             },
             isExpiry(dbInbound, index) {
