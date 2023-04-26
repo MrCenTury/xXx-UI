@@ -1,24 +1,50 @@
 {{define "form/socks"}}
 <a-form layout="inline">
 <!--    <a-form-item label="Password authentication">-->
-    <a-form-item label='{{ i18n "password" }}'>
-        <a-switch :checked="inbound.settings.auth === 'password'"
-                  @change="checked => inbound.settings.auth = checked ? 'password' : 'noauth'"></a-switch>
-    </a-form-item>
+    <table width="100%" class="ant-table-tbody">
+        <tr>
+            <td>{{ i18n "password" }}</td>
+            <td>
+                <a-form-item>
+                    <a-switch :checked="inbound.settings.auth === 'password'"
+                              @change="checked => inbound.settings.auth = checked ? 'password' : 'noauth'"></a-switch>
+                </a-form-item>
+            </td>
+        </tr>
     <template v-if="inbound.settings.auth === 'password'">
-        <a-form-item label='{{ i18n "username" }}'>
-            <a-input v-model.trim="inbound.settings.accounts[0].user"></a-input>
-        </a-form-item>
-        <a-form-item label='{{ i18n "password" }}'>
-            <a-input v-model.trim="inbound.settings.accounts[0].pass"></a-input>
-        </a-form-item>
+        <tr>
+            <td>{{ i18n "username" }}</td>
+            <td>
+                <a-form-item>
+                    <a-input v-model.trim="inbound.settings.accounts[0].user"></a-input>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr>
+            <td>{{ i18n "password" }}</td>
+            <td>
+                <a-form-item>
+                    <a-input v-model.trim="inbound.settings.accounts[0].pass"></a-input>
+                </a-form-item>
+            </td>
+        </tr>
     </template>
-    <a-form-item label='{{ i18n "pages.inbounds.enable" }} udp'>
-        <a-switch v-model="inbound.settings.udp"></a-switch>
-    </a-form-item>
-    <a-form-item v-if="inbound.settings.udp"
-                 label="IP">
-        <a-input v-model.trim="inbound.settings.ip"></a-input>
-    </a-form-item>
+        <tr>
+            <td>{{ i18n "pages.inbounds.enable" }} udp</td>
+            <td>
+                <a-form-item>
+                    <a-switch v-model="inbound.settings.udp"></a-switch>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr>
+            <td>IP</td>
+            <td>
+                <a-form-item v-if="inbound.settings.udp">
+                    <a-input v-model.trim="inbound.settings.ip"></a-input>
+                </a-form-item>
+            </td>
+        </tr>
+    </table>
 </a-form>
 {{end}}
