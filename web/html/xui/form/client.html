@@ -3,88 +3,147 @@
     <template v-if="isEdit">
     <a-tag v-if="isExpiry || isTrafficExhausted" color="red" style="margin-bottom: 10px;display: block;text-align: center;">Account is (Expired|Traffic Ended) And Disabled</a-tag>
     </template>
-    <a-form-item>
-        <span slot="label">
-            <span>{{ i18n "pages.inbounds.Email" }}</span>
-            <a-tooltip>
-                <template slot="title">
-                    <span>{{ i18n "pages.inbounds.EmailDesc" }}</span>
-                </template>
-                <a-icon type="sync" @click="getNewEmail(client)"></a-icon>
-            </a-tooltip>
-        </span>
-        <a-input v-model.trim="client.email"></a-input>
-    </a-form-item>
-    <a-form-item label="{{ i18n "pages.inbounds.enable" }}">
-        <a-switch v-model="client.enable"></a-switch>
-    </a-form-item>
-    <a-form-item label="password" v-if="inbound.protocol === Protocols.TROJAN">
-        <a-input v-model.trim="client.password"></a-input>
-    </a-form-item>
-    <a-form-item label="id" v-if="inbound.protocol === Protocols.VMESS || inbound.protocol === Protocols.VLESS">
-        <a-input v-model.trim="client.id"></a-input>
-    </a-form-item>
-    <a-form-item label='{{ i18n "additional" }} ID' v-if="inbound.protocol === Protocols.VMESS">
-        <a-input type="number" v-model.number="client.alterId"></a-input>
-    </a-form-item>
-    <a-form-item label="Subscription" v-if="client.email">
-        <a-input v-model.trim="client.subId"></a-input>
-    </a-form-item>
-    <a-form-item label="Telegram Username" v-if="client.email">
-        <a-input v-model.trim="client.tgId"></a-input>
-    </a-form-item>
-    <a-form-item v-if="inbound.xtls" label="flow">
-        <a-select v-model="client.flow" style="width: 150px" :dropdown-class-name="siderDrawer.isDarkTheme ? 'ant-card-dark' : ''">
-            <a-select-option value="">{{ i18n "none" }}</a-select-option>
-            <a-select-option v-for="key in XTLS_FLOW_CONTROL" :value="key">[[ key ]]</a-select-option>
-        </a-select>
-    </a-form-item>
-    <a-form-item v-else-if="inbound.canEnableTlsFlow()" label="flow" layout="inline">
-        <a-select v-model="client.flow" style="width: 150px">
-            <a-select-option value="" selected>{{ i18n "none" }}</a-select-option>
-            <a-select-option v-for="key in TLS_FLOW_CONTROL" :value="key">[[ key ]]</a-select-option>
-        </a-select>
-    </a-form-item>
-    <a-form-item>
-        <span slot="label">
-            <span >{{ i18n "pages.inbounds.totalFlow" }}</span>(GB)
-            <a-tooltip>
-                <template slot="title">
-                    0 <span>{{ i18n "pages.inbounds.meansNoLimit" }}</span>
-                </template>
-                <a-icon type="question-circle" theme="filled"></a-icon>
-            </a-tooltip>
-        </span>
-        <a-input-number v-model="client._totalGB" :min="0"></a-input-number>
-        <template v-if="isEdit && clientStats">
-            <span>{{ i18n "usage" }}:</span>
-            <a-tag :color="statsColor">
-                [[ sizeFormat(clientStats.up) ]] / 
-                [[ sizeFormat(clientStats.down) ]]
-                ([[ sizeFormat(clientStats.up + clientStats.down) ]])
-            </a-tag>
-        </template>
-    </a-form-item>
-    <a-form-item label="{{ i18n "pages.client.delayedStart" }}">
-        <a-switch v-model="clientModal.delayedStart" @click="client._expiryTime=0"></a-switch>
-    </a-form-item>
-    <a-form-item label="{{ i18n "pages.client.expireDays" }}" v-if="clientModal.delayedStart">
-        <a-input type="number" v-model.number="delayedExpireDays" :min="0"></a-input>
-    </a-form-item>
-    <a-form-item v-else>
-        <span slot="label">
-            <span >{{ i18n "pages.inbounds.expireDate" }}</span>
-            <a-tooltip>
-                <template slot="title">
-                    <span>{{ i18n "pages.inbounds.leaveBlankToNeverExpire" }}</span>
-                </template>
-                <a-icon type="question-circle" theme="filled"></a-icon>
-            </a-tooltip>
-        </span>
-        <a-date-picker :show-time="{ format: 'HH:mm' }" format="YYYY-MM-DD HH:mm"
-                       :dropdown-class-name="siderDrawer.isDarkTheme ? 'ant-card-dark' : ''"
-                       v-model="client._expiryTime" style="width: 300px;"></a-date-picker>
-        <a-tag color="red" v-if="isExpiry">Expired</a-tag>
-    </a-form-item>
+    <table width="100%" class="ant-table-tbody">
+        <tr>
+            <td>{{ i18n "pages.inbounds.enable" }}</td>
+            <td>
+                <a-form-item>
+                    <a-switch v-model="client.enable"></a-switch>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span>{{ i18n "pages.inbounds.Email" }}</span>
+                <a-tooltip>
+                    <template slot="title">
+                        <span>{{ i18n "pages.inbounds.EmailDesc" }}</span>
+                    </template>
+                    <a-icon type="sync" @click="getNewEmail(client)"></a-icon>
+                </a-tooltip>
+            </td>
+            <td>
+                <a-form-item>
+                    <a-input v-model.trim="client.email" style="width: 250px"></a-input>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-if="inbound.protocol === Protocols.TROJAN">
+            <td>password</td>
+            <td>
+                <a-form-item>
+                    <a-input v-model.trim="client.password" style="width: 250px"></a-input>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-if="inbound.protocol === Protocols.VMESS || inbound.protocol === Protocols.VLESS">
+            <td>ID</td>
+            <td>
+                <a-form-item>
+                    <a-input v-model.trim="client.id" style="width: 250px"></a-input>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-if="inbound.protocol === Protocols.VMESS">
+            <td>{{ i18n "additional" }}</td>
+            <td>
+                <a-form-item>
+                    <a-input-number v-model.number="client.alterId"></a-input-number>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-if="client.email">
+            <td>Subscription</td>
+            <td>
+                <a-form-item>
+                    <a-input v-model.trim="client.subId" style="width: 250px"></a-input>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-if="client.email">
+            <td>Telegram Username</td>
+            <td>
+                <a-form-item>
+                    <a-input v-model.trim="client.tgId" style="width: 250px"></a-input>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-if="inbound.canEnableTlsFlow()">
+            <td>Flow</td>
+            <td>
+                <a-form-item>
+                    <a-select v-model="client.flow" style="width: 250px" :dropdown-class-name="siderDrawer.isDarkTheme ? 'ant-card-dark' : ''">
+                        <a-select-option value="" selected>{{ i18n "none" }}</a-select-option>
+                        <a-select-option v-for="key in TLS_FLOW_CONTROL" :value="key">[[ key ]]</a-select-option>
+                    </a-select>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <span >{{ i18n "pages.inbounds.totalFlow" }}</span>(GB)
+                <a-tooltip>
+                    <template slot="title">
+                        0 <span>{{ i18n "pages.inbounds.meansNoLimit" }}</span>
+                    </template>
+                    <a-icon type="question-circle" theme="filled"></a-icon>
+                </a-tooltip>
+            </td>
+            <td>
+                <a-form-item>
+                    <a-input-number v-model="client._totalGB" :min="0"></a-input-number>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-if="isEdit && clientStats">
+            <td>{{ i18n "usage" }}</td>
+            <td>
+                <a-tag :color="statsColor">
+                    [[ sizeFormat(clientStats.up) ]] / 
+                    [[ sizeFormat(clientStats.down) ]]
+                    ([[ sizeFormat(clientStats.up + clientStats.down) ]])
+                </a-tag>
+                <a-tooltip>
+                    <template slot="title">{{ i18n "pages.inbounds.resetTraffic" }}</template>
+                    <a-icon type="retweet" @click="resetClientTraffic(client.email,clientStats.inboundId,$event.target)" v-if="client.email.length > 0"></a-icon>
+                </a-tooltip>
+            </td>
+        </tr>
+        <tr>
+            <td>{{ i18n "pages.client.delayedStart" }}</td>
+            <td>
+                <a-form-item>
+                    <a-switch v-model="clientModal.delayedStart" @click="client._expiryTime=0"></a-switch>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-if="clientModal.delayedStart">
+            <td>{{ i18n "pages.client.expireDays" }}</td>
+            <td>
+                <a-form-item>
+                    <a-input-number v-model.number="delayedExpireDays" :min="0"></a-input-number>
+                </a-form-item>
+            </td>
+        </tr>
+        <tr v-else>
+            <td>
+                <span >{{ i18n "pages.inbounds.expireDate" }}</span>
+                <a-tooltip>
+                    <template slot="title">
+                        <span>{{ i18n "pages.inbounds.leaveBlankToNeverExpire" }}</span>
+                    </template>
+                    <a-icon type="question-circle" theme="filled"></a-icon>
+                </a-tooltip>
+            </td>
+            <td>
+                <a-form-item>
+                    <a-date-picker :show-time="{ format: 'HH:mm' }" format="YYYY-MM-DD HH:mm"
+                                   :dropdown-class-name="siderDrawer.isDarkTheme ? 'ant-card-dark' : ''"
+                                   v-model="client._expiryTime" style="width: 250px;"></a-date-picker>
+                    <a-tag color="red" v-if="isExpiry">Expired</a-tag>
+                </a-form-item>
+            </td>
+        </tr>
+    </table>
 </a-form>
 {{end}}
