@@ -12,17 +12,23 @@
         confirmLoading: false,
         title: '',
         okText: '',
+        isEdit: false,
         dbInbound: new DBInbound(),
         inbound: new Inbound(),
         clients: [],
         clientStats: [],
+        oldClientId: "",
         index: null,
         isExpired: false,
         delayedStart: false,
         ok() {
-            ObjectUtil.execute(clientModal.confirm, clientModal.inbound, clientModal.dbInbound, clientModal.index);
+            if(clientModal.isEdit){
+                ObjectUtil.execute(clientModal.confirm, clientModalApp.client, clientModal.dbInbound.id, clientModal.oldClientId);
+            } else {
+                ObjectUtil.execute(clientModal.confirm, clientModalApp.client, clientModal.dbInbound.id);
+            }
         },
-        show({ title='', okText='{{ i18n "sure" }}', index=null, dbInbound=null, confirm=(index, dbInbound)=>{}, isEdit=false  }) {
+        show({ title='', okText='{{ i18n "sure" }}', index=null, dbInbound=null, confirm=()=>{}, isEdit=false  }) {
             this.visible = true;
             this.title = title;
             this.okText = okText;
@@ -33,12 +39,13 @@
             this.index = index === null ? this.clients.length : index;
             this.isExpired = isEdit ? this.inbound.isExpiry(this.index) : false;
             this.delayedStart = false;
-            if (!isEdit){
-                this.addClient(this.inbound.protocol, this.clients);
-            } else {
+            if (isEdit){
                 if (this.clients[index].expiryTime < 0){
                     this.delayedStart = true;
                 }
+                this.oldClientId = this.dbInbound.protocol == "trojan" ? this.clients[index].password : this.clients[index].id;
+            } else {
+                this.addClient(this.inbound.protocol, this.clients);
             }
             this.clientStats = this.dbInbound.clientStats.find(row => row.email === this.clients[this.index].email);
             this.confirm = confirm;
@@ -116,6 +123,24 @@
                     string += chars[Math.floor(Math.random() * chars.length)];
                 }
                 client.email = string;
+            },
+            resetClientTraffic(email,dbInboundId,iconElement) {
+                this.$confirm({
+                    title: '{{ i18n "pages.inbounds.resetTraffic"}}',
+                    content: '{{ i18n "pages.inbounds.resetTrafficContent"}}',
+                    class: siderDrawer.isDarkTheme ? darkClass : '',
+                    okText: '{{ i18n "reset"}}',
+                    cancelText: '{{ i18n "cancel"}}',
+                    onOk: async () => {
+                        iconElement.disabled = true;
+                        const msg = await HttpUtil.postWithModal('/xui/inbound/' + dbInboundId + '/resetClientTraffic/'+ email);
+                        if (msg.success) {
+                            this.clientModal.clientStats.up = 0;
+                            this.clientModal.clientStats.down = 0;
+                        }
+                        iconElement.disabled = false;
+                    },
+                })
             },
         },
     });
