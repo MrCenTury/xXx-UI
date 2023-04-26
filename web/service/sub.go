@@ -8,6 +8,7 @@ import (
 	"x-ui/database"
 	"x-ui/database/model"
 	"x-ui/logger"
+	"x-ui/xray"
 
 	"github.com/goccy/go-json"
 	"gorm.io/gorm"
@@ -18,12 +19,15 @@ type SubService struct {
 	inboundService InboundService
 }
 
-func (s *SubService) GetSubs(subId string, host string) ([]string, error) {
+func (s *SubService) GetSubs(subId string, host string) ([]string, string, error) {
 	s.address = host
 	var result []string
+	var header string
+	var traffic xray.ClientTraffic
+	var clientTraffics []xray.ClientTraffic
 	inbounds, err := s.getInboundsBySubId(subId)
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 	for _, inbound := range inbounds {
 		clients, err := s.inboundService.getClients(inbound)
@@ -37,20 +41,52 @@ func (s *SubService) GetSubs(subId string, host string) ([]string, error) {
 			if client.SubID == subId {
 				link := s.getLink(inbound, client.Email)
 				result = append(result, link)
+				clientTraffics = append(clientTraffics, s.getClientTraffics(inbound.ClientStats, client.Email))
 			}
 		}
 	}
-	return result, nil
+	for index, clientTraffic := range clientTraffics {
+		if index == 0 {
+			traffic.Up = clientTraffic.Up
+			traffic.Down = clientTraffic.Down
+			traffic.Total = clientTraffic.Total
+			if clientTraffic.ExpiryTime > 0 {
+				traffic.ExpiryTime = clientTraffic.ExpiryTime
+			}
+		} else {
+			traffic.Up += clientTraffic.Up
+			traffic.Down += clientTraffic.Down
+			if traffic.Total == 0 || clientTraffic.Total == 0 {
+				traffic.Total = 0
+			} else {
+				traffic.Total += clientTraffic.Total
+			}
+			if clientTraffic.ExpiryTime != traffic.ExpiryTime {
+				traffic.ExpiryTime = 0
+			}
+		}
+	}
+	header = fmt.Sprintf("upload=%d; download=%d; total=%d; expire=%d", traffic.Up, traffic.Down, traffic.Total, traffic.ExpiryTime/1000)
+	return result, header, nil
 }
 
 func (s *SubService) getInboundsBySubId(subId string) ([]*model.Inbound, error) {
 	db := database.GetDB()
 	var inbounds []*model.Inbound
-	err := db.Model(model.Inbound{}).Where("settings like ?", fmt.Sprintf(`%%"subId": "%s"%%`, subId)).Find(&inbounds).Error
+	err := db.Model(model.Inbound{}).Preload("ClientStats").Where("settings like ?", fmt.Sprintf(`%%"subId": "%s"%%`, subId)).Find(&inbounds).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
 	}
 	return inbounds, nil
+}
+
+func (s *SubService) getClientTraffics(traffics []xray.ClientTraffic, email string) xray.ClientTraffic {
+	for _, traffic := range traffics {
+		if traffic.Email == email {
+			return traffic
+		}
+	}
+	return xray.ClientTraffic{}
 }
 
 func (s *SubService) getLink(inbound *model.Inbound, email string) string {
@@ -269,40 +305,41 @@ func (s *SubService) genVlessLink(inbound *model.Inbound, email string) string {
 		}
 	}
 
-	if security == "xtls" {
-		params["security"] = "xtls"
-		xtlsSetting, _ := stream["xtlsSettings"].(map[string]interface{})
-		alpns, _ := xtlsSetting["alpn"].([]interface{})
-		var alpn []string
-		for _, a := range alpns {
-			alpn = append(alpn, a.(string))
-		}
-		if len(alpn) > 0 {
-			params["alpn"] = strings.Join(alpn, ",")
-		}
-
-		xtlsSettings, _ := searchKey(xtlsSetting, "settings")
-		if xtlsSetting != nil {
-			if sniValue, ok := searchKey(xtlsSettings, "serverName"); ok {
-				params["sni"], _ = sniValue.(string)
+	if security == "reality" {
+		params["security"] = "reality"
+		realitySetting, _ := stream["realitySettings"].(map[string]interface{})
+		realitySettings, _ := searchKey(realitySetting, "settings")
+		if realitySetting != nil {
+			if sniValue, ok := searchKey(realitySetting, "serverNames"); ok {
+				sNames, _ := sniValue.([]interface{})
+				params["sni"], _ = sNames[0].(string)
 			}
-			if fpValue, ok := searchKey(xtlsSettings, "fingerprint"); ok {
-				params["fp"], _ = fpValue.(string)
+			if pbkValue, ok := searchKey(realitySettings, "publicKey"); ok {
+				params["pbk"], _ = pbkValue.(string)
 			}
-			if insecure, ok := searchKey(xtlsSettings, "allowInsecure"); ok {
-				if insecure.(bool) {
-					params["allowInsecure"] = "1"
+			if sidValue, ok := searchKey(realitySetting, "shortIds"); ok {
+				shortIds, _ := sidValue.([]interface{})
+				params["sid"], _ = shortIds[0].(string)
+			}
+			if fpValue, ok := searchKey(realitySettings, "fingerprint"); ok {
+				if fp, ok := fpValue.(string); ok && len(fp) > 0 {
+					params["fp"] = fp
+				}
+			}
+			if spxValue, ok := searchKey(realitySettings, "spiderX"); ok {
+				if spx, ok := spxValue.(string); ok && len(spx) > 0 {
+					params["spx"] = spx
+				}
+			}
+			if serverName, ok := searchKey(realitySettings, "serverName"); ok {
+				if sname, ok := serverName.(string); ok && len(sname) > 0 {
+					address = sname
 				}
 			}
 		}
 
 		if streamNetwork == "tcp" && len(clients[clientIndex].Flow) > 0 {
 			params["flow"] = clients[clientIndex].Flow
-		}
-
-		serverName, _ := xtlsSetting["serverName"].(string)
-		if serverName != "" {
-			address = serverName
 		}
 	}
 
@@ -413,40 +450,41 @@ func (s *SubService) genTrojanLink(inbound *model.Inbound, email string) string 
 		}
 	}
 
-	if security == "xtls" {
-		params["security"] = "xtls"
-		xtlsSetting, _ := stream["xtlsSettings"].(map[string]interface{})
-		alpns, _ := xtlsSetting["alpn"].([]interface{})
-		var alpn []string
-		for _, a := range alpns {
-			alpn = append(alpn, a.(string))
-		}
-		if len(alpn) > 0 {
-			params["alpn"] = strings.Join(alpn, ",")
-		}
-
-		xtlsSettings, _ := searchKey(xtlsSetting, "settings")
-		if xtlsSetting != nil {
-			if sniValue, ok := searchKey(xtlsSettings, "serverName"); ok {
-				params["sni"], _ = sniValue.(string)
+	if security == "reality" {
+		params["security"] = "reality"
+		realitySetting, _ := stream["realitySettings"].(map[string]interface{})
+		realitySettings, _ := searchKey(realitySetting, "settings")
+		if realitySetting != nil {
+			if sniValue, ok := searchKey(realitySetting, "serverNames"); ok {
+				sNames, _ := sniValue.([]interface{})
+				params["sni"], _ = sNames[0].(string)
 			}
-			if fpValue, ok := searchKey(xtlsSettings, "fingerprint"); ok {
-				params["fp"], _ = fpValue.(string)
+			if pbkValue, ok := searchKey(realitySettings, "publicKey"); ok {
+				params["pbk"], _ = pbkValue.(string)
 			}
-			if insecure, ok := searchKey(xtlsSettings, "allowInsecure"); ok {
-				if insecure.(bool) {
-					params["allowInsecure"] = "1"
+			if sidValue, ok := searchKey(realitySettings, "shortIds"); ok {
+				shortIds, _ := sidValue.([]interface{})
+				params["sid"], _ = shortIds[0].(string)
+			}
+			if fpValue, ok := searchKey(realitySettings, "fingerprint"); ok {
+				if fp, ok := fpValue.(string); ok && len(fp) > 0 {
+					params["fp"] = fp
+				}
+			}
+			if spxValue, ok := searchKey(realitySettings, "spiderX"); ok {
+				if spx, ok := spxValue.(string); ok && len(spx) > 0 {
+					params["spx"] = spx
+				}
+			}
+			if serverName, ok := searchKey(realitySettings, "serverName"); ok {
+				if sname, ok := serverName.(string); ok && len(sname) > 0 {
+					address = sname
 				}
 			}
 		}
 
 		if streamNetwork == "tcp" && len(clients[clientIndex].Flow) > 0 {
 			params["flow"] = clients[clientIndex].Flow
-		}
-
-		serverName, _ := xtlsSetting["serverName"].(string)
-		if serverName != "" {
-			address = serverName
 		}
 	}
 
@@ -494,7 +532,11 @@ func searchHost(headers interface{}) string {
 			switch v.(type) {
 			case []interface{}:
 				hosts, _ := v.([]interface{})
-				return hosts[0].(string)
+				if len(hosts) > 0 {
+					return hosts[0].(string)
+				} else {
+					return ""
+				}
 			case interface{}:
 				return v.(string)
 			}
